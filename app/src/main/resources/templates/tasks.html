@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Task Board</title>
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+</head>
+<body class="p-4">
+
+<nav class="mb-4 d-flex justify-content-between">
+  <h3>Task Board</h3>
+  <form th:action="@{/logout}" method="post">
+    <button class="btn btn-outline-danger btn-sm">Logout</button>
+  </form>
+</nav>
+
+<!-- flash message -->
+<div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
+
+<!-- add new task -->
+<form th:action="@{/tasks}" method="post" class="row g-2 align-items-end mb-4">
+  <input type="hidden" th:field="*{task.id}">
+  <div class="col-sm">
+    <label class="form-label">Title</label>
+    <input class="form-control" th:field="*{task.title}" required>
+  </div>
+  <div class="col-sm">
+    <label class="form-label">Description</label>
+    <input class="form-control" th:field="*{task.description}">
+  </div>
+  <div class="col-sm">
+    <label class="form-label">Due</label>
+    <input class="form-control" th:field="*{task.dueDate}" type="date" required>
+  </div>
+  <div class="col-auto">
+    <label class="form-label d-block">&nbsp;</label>
+    <button class="btn btn-primary">Add</button>
+  </div>
+</form>
+
+<!-- filter dropdown -->
+<form method="get" class="mb-2">
+  <select class="form-select w-auto" name="filter"
+          onchange="this.form.submit()">
+    <option value="all"         th:selected="${filter=='all'}">All</option>
+    <option value="uncompleted" th:selected="${filter=='uncompleted'}">Uncompleted</option>
+    <option value="completed"   th:selected="${filter=='completed'}">Completed</option>
+  </select>
+</form>
+
+<!-- task list -->
+<table class="table table-hover">
+  <thead>
+    <tr><th>Done</th><th>Title</th><th>Description</th><th>Due</th></tr>
+  </thead>
+  <tbody>
+    <tr th:each="t : ${tasks}">
+      <td>
+        <form th:action="@{|/tasks/${t.id}/complete|}" method="post">
+          <button class="btn btn-sm"
+                  th:classappend="${t.completed}? 'btn-success' : 'btn-outline-secondary'"
+                  th:text="${t.completed} ? '✓' : '…'"></button>
+        </form>
+      </td>
+      <td th:text="${t.title}"></td>
+      <td th:text="${t.description}"></td>
+      <td th:text="${t.dueDate}"></td>
+    </tr>
+  </tbody>
+</table>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
